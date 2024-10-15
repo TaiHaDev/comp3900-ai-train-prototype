@@ -1,101 +1,93 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
+import { useState } from 'react'
+import { Bus, Train, Bike, Car } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import Link from 'next/link'
+
+export default function PreferencesPage() {
+  const [selectedModes, setSelectedModes] = useState([])
+  const [routePreference, setRoutePreference] = useState('')
+
+  const toggleMode = (mode) => {
+    setSelectedModes(prev => 
+      prev.includes(mode) ? prev.filter(m => m !== mode) : [...prev, mode]
+    )
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="container mx-auto p-4 max-w-md">
+      <h1 className="text-xl font-bold mb-4">Set Your Travel Preferences</h1>
+      
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle className="text-lg">Preferred Transport Modes</CardTitle>
+          <CardDescription>Select all that apply</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-2">
+          <Button 
+            variant={selectedModes.includes('bus') ? "default" : "outline"}
+            onClick={() => toggleMode('bus')}
+            className="w-full"
+          >
+            <Bus className="mr-2 h-4 w-4" /> Bus
+          </Button>
+          <Button 
+            variant={selectedModes.includes('train') ? "default" : "outline"}
+            onClick={() => toggleMode('train')}
+            className="w-full"
+          >
+            <Train className="mr-2 h-4 w-4" /> Train
+          </Button>
+          <Button 
+            variant={selectedModes.includes('bike') ? "default" : "outline"}
+            onClick={() => toggleMode('bike')}
+            className="w-full"
+          >
+            <Bike className="mr-2 h-4 w-4" /> Bike
+          </Button>
+          <Button 
+            variant={selectedModes.includes('car') ? "default" : "outline"}
+            onClick={() => toggleMode('car')}
+            className="w-full"
+          >
+            <Car className="mr-2 h-4 w-4" /> Car
+          </Button>
+        </CardContent>
+      </Card>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <Card className="mb-4">
+        <CardHeader>
+          <CardTitle className="text-lg">Route Preference</CardTitle>
+          <CardDescription>Choose your preferred route type</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup onValueChange={setRoutePreference} value={routePreference}>
+            <div className="flex items-center space-x-2 mb-2">
+              <RadioGroupItem value="fastest" id="fastest" />
+              <Label htmlFor="fastest">Fastest Route</Label>
+            </div>
+            <div className="flex items-center space-x-2 mb-2">
+              <RadioGroupItem value="leastTransfers" id="leastTransfers" />
+              <Label htmlFor="leastTransfers">Least Transfers</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="scenic" id="scenic" />
+              <Label htmlFor="scenic">Scenic Route</Label>
+            </div>
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
+      <CardFooter>
+        <Link href="/route" className="w-full">
+          <Button className="w-full">Start Journey</Button>
+        </Link>
+      </CardFooter>
+
     </div>
-  );
+  )
 }
