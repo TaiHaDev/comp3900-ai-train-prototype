@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { MapPin, AlertTriangle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import VoiceChat from '@/components/VoiceChat'
 
@@ -20,9 +20,43 @@ export default function RoutePage() {
     { name: "Destination", time: "10:45" },
   ]
 
+  const alternativeRoutes = [
+    {
+      mode: "Bus 42 to Train A",
+      arrivalTime: "11:20",
+      description: "Take Bus 42 to Central Station, then transfer to Train A. A bit longer, but avoids the current maintenance issue."
+    },
+    {
+      mode: "Bus 35 + Bus 50",
+      arrivalTime: "11:10",
+      description: "Take Bus 35 for 15 minutes, then transfer to Bus 50. Total travel time is approximately 1 hour."
+    },
+    {
+      mode: "Walk + Train B",
+      arrivalTime: "11:30",
+      description: "Walk 10 minutes to the nearest station, then take Train B directly to your destination. A healthy but slightly slower option."
+    },
+    {
+      mode: "Bike Share + Bus 60",
+      arrivalTime: "11:25",
+      description: "Bike for 5 km to the next bus stop, then take Bus 60. Ideal for a mix of exercise and quicker transit."
+    },
+    {
+      mode: "Bus 15 + Walk",
+      arrivalTime: "11:05",
+      description: "Take Bus 15, then walk the remaining 1.5 km. A good choice if you don't mind a bit of walking."
+    },
+  ]
+
   const simulateRouteChange = () => {
     setShowRouteChange(true)
-    // Here you would typically update the route
+  }
+
+  const selectAlternativeRoute = (route) => {
+    // Simulate setting the new route and updating the arrival time
+    setShowAlternatives(false)
+    setShowRouteChange(false)
+    // Here you can update the state with the new selected route, if needed.
   }
 
   return (
@@ -75,10 +109,17 @@ export default function RoutePage() {
               Here are some alternative routes you can take:
             </DialogDescription>
           </DialogHeader>
-          <ul className="list-disc pl-5">
-            <li>Bus 42 - Arrives at 11:15</li>
-            <li>Train A - Arrives at 11:30</li>
-            <li>Walk - Arrives at 12:00</li>
+          <ul className="list-disc pl-5 space-y-2">
+            {alternativeRoutes.map((route, index) => (
+              <li 
+                key={index} 
+                onClick={() => selectAlternativeRoute(route)} 
+                className="cursor-pointer hover:bg-gray-100 p-2 rounded"
+              >
+                <span className="font-bold">{route.mode}</span> - Arrives at {route.arrivalTime}
+                <p className="text-sm text-gray-600">{route.description}</p>
+              </li>
+            ))}
           </ul>
         </DialogContent>
       </Dialog>
