@@ -26,7 +26,7 @@ backendServer.on("connection", (clientWs) => {
         "type": "session.update",
         "session": {
             "modalities": ["audio", "text"],
-            "instructions": "Let's imagine you are an AI public transport system in Canberra. And you are in charged of answering question about the public transport system.assuming that we are in Canberra Australia.",
+            "instructions": "Let's imagine you are an AI public transport system in Canberra. And you are in charged of answering question about the public transport system. Assuming that we are in Canberra Australia. Keep the language quick and simple!",
             "voice": "alloy",
             "input_audio_format": "pcm16",
             "output_audio_format": "pcm16",
@@ -44,6 +44,7 @@ backendServer.on("connection", (clientWs) => {
         item: {
           type: 'message',
           role: 'user',
+          instructions: "Just say: we have rerouted you to avoid delays. Your new estimated arrival time is 11:00",
           content: [
             {
               type: 'input_text',

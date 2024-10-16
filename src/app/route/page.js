@@ -63,7 +63,7 @@ export default function RoutePage() {
     {
       mode: "Bus 15 + Walk",
       arrivalTime: "11:05",
-      description: "Take Bus 15, then walk the remaining 1.5 km. A good choice if you don't mind a bit of walking."
+      description: "Take Bus 15, then walk the remaining 1.5 km. A good choice if you don&apost mind a bit of walking."
     },
   ]
 
@@ -224,7 +224,7 @@ export default function RoutePage() {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Route Updated</AlertTitle>
             <AlertDescription>
-              We've rerouted you to avoid delays. Your new estimated arrival
+              We&aposve rerouted you to avoid delays. Your new estimated arrival
               time is 11:00.
             </AlertDescription>
           </Alert>
