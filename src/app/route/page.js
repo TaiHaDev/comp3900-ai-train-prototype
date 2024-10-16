@@ -68,8 +68,17 @@ export default function RoutePage() {
   ]
 
   const simulateRouteChange = () => {
-    setShowRouteChange(true)
-  }
+    // Simulate a change in the route due to maintenance or other issues
+    const updatedRoute = [
+      { name: startLocation || "Start", time: route[0].time },
+      { name: "Detour Stop 1", time: addMinutes(route[0].time, 20) }, // Adds 20 minutes for detour
+      { name: "Detour Stop 2", time: addMinutes(route[0].time, 40) }, // Adds more time for detour
+      { name: destination || "Destination", time: addMinutes(route[0].time, 60) }, // Final time at the destination
+    ];
+  
+    setRoute(updatedRoute);
+    setShowRouteChange(true);
+  };
 
   const selectAlternativeRoute = (route) => {
     setShowAlternatives(false)
