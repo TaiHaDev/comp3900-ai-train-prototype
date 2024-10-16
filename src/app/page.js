@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bus, Train, Bike, Car } from 'lucide-react'
+import { Bus, Train, Bike, Car,Ship } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -54,7 +54,7 @@ export default function PreferencesPage() {
             onClick={() => toggleMode('car')}
             className="w-full"
           >
-            <Car className="mr-2 h-4 w-4" /> Car
+            <Ship className="mr-2 h-4 w-4" /> Ferry
           </Button>
         </CardContent>
       </Card>
