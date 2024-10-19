@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from "react"
-import { MapPin, AlertTriangle, Clock, MapPinned, Leaf, Footprints, ArrowLeftRight, Utensils } from "lucide-react"
+import { MapPin, AlertTriangle, Clock, MapPinned, Leaf, Footprints, ArrowLeftRight, Utensils, Bus, User, Flag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -207,7 +207,7 @@ export default function RoutePage() {
         </DialogContent>
       </Dialog>
 
-      <div className="space-y-2 mb-16">
+      <div className="space-y-2 mb-4">
         <Button onClick={simulateRouteChange} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">
           <Clock className="mr-2 h-4 w-4" />
           Simulate Route Change
@@ -217,6 +217,46 @@ export default function RoutePage() {
           Show Alternatives
         </Button>
       </div>
+
+      <Card className="mb-4 bg-card text-card-foreground">
+  <CardHeader>
+    <CardTitle className="text-lg">Route Map</CardTitle>
+    <CardDescription>
+      Estimated bus arrival: 5 minutes
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+        {/* Simplified road network */}
+        <path d="M10,50 H90" stroke="#CBD5E0" strokeWidth="2" />
+        <path d="M50,10 V90" stroke="#CBD5E0" strokeWidth="2" />
+        
+        {/* Bus marker */}
+        <g transform="translate(20,50)">
+          <circle cx="0" cy="0" r="3" fill="#3182CE" />
+          <Bus size={16} className="text-blue-500" />
+          <text x="0" y="20" fontSize="4" fill="#4A5568" textAnchor="middle">Bus (5 min away)</text> {/* Centered label */}
+        </g>
+        
+        {/* User marker */}
+        <g transform="translate(50,50)">
+          <circle cx="0" cy="0" r="3" fill="#48BB78" />
+          <User size={16} className="text-green-500" />
+          <text x="0" y="20" fontSize="4" fill="#4A5568" textAnchor="middle">You are here</text> {/* Centered label */}
+        </g>
+        
+        {/* Destination marker */}
+        <g transform="translate(80,50)">
+          <circle cx="0" cy="0" r="3" fill="#ED8936" />
+          <Flag size={16} className="text-orange-500" />
+          <text x="0" y="20" fontSize="4" fill="#4A5568" textAnchor="middle">Destination</text> {/* Centered label */}
+        </g>
+      </svg>
+    </div>
+  </CardContent>
+</Card>
+
 
       <Dialog open={showRouteChange} onOpenChange={setShowRouteChange}>
         <DialogContent className="bg-background text-foreground">
