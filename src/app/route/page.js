@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from "react"
-import { MapPin, AlertTriangle, Clock, MapPinned } from "lucide-react"
+import { MapPin, AlertTriangle, Clock, MapPinned, Leaf, Footprints, ArrowLeftRight, Utensils } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -21,7 +21,8 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import VoiceChat from "@/components/VoiceChat"
+import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 export default function RoutePage() {
   const [currentStop, setCurrentStop] = useState(0)
@@ -43,37 +44,46 @@ export default function RoutePage() {
     {
       mode: "Bus 42 to Train A",
       arrivalTime: "11:20",
-      description: "Take Bus 42 to Central Station, then transfer to Train A. A bit longer, but avoids the current maintenance issue."
+      description: "Take Bus 42 to Central Station, then transfer to Train A. A bit longer, but avoids the current maintenance issue.",
+      preference: "eco",
+      icon: <Leaf className="h-4 w-4 text-green-500" />,
     },
     {
       mode: "Bus 35 + Bus 50",
       arrivalTime: "11:10",
-      description: "Take Bus 35 for 15 minutes, then transfer to Bus 50. Total travel time is approximately 1 hour."
+      description: "Take Bus 35 for 15 minutes, then transfer to Bus 50. Total travel time is approximately 1 hour.",
+      preference: "fast",
+      icon: <Clock className="h-4 w-4 text-blue-500" />,
     },
     {
       mode: "Walk + Train B",
       arrivalTime: "11:30",
-      description: "Walk 10 minutes to the nearest station, then take Train B directly to your destination. A healthy but slightly slower option."
+      description: "Walk 10 minutes to the nearest station, then take Train B directly to your destination. A healthy but slightly slower option.",
+      preference: "walking",
+      icon: <Footprints className="h-4 w-4 text-purple-500" />,
     },
     {
       mode: "Bike Share + Bus 60",
       arrivalTime: "11:25",
-      description: "Bike for 5 km to the next bus stop, then take Bus 60. Ideal for a mix of exercise and quicker transit."
+      description: "Bike for 5 km to the next bus stop, then take Bus 60. Ideal for a mix of exercise and quicker transit.",
+      preference: "eco",
+      icon: <Leaf className="h-4 w-4 text-green-500" />,
     },
     {
-      mode: "Bus 15 + Walk",
+      mode: "Bus 15 + Walk + Food Stop",
       arrivalTime: "11:05",
-      description: "Take Bus 15, then walk the remaining 1.5 km. A good choice if you don&apost mind a bit of walking."
+      description: "Take Bus 15, then walk the remaining 1.5 km. Includes a stop at a highly-rated restaurant on the way.",
+      preference: "food",
+      icon: <Utensils className="h-4 w-4 text-orange-500" />,
     },
   ]
 
   const simulateRouteChange = () => {
-    // Simulate a change in the route due to maintenance or other issues
     const updatedRoute = [
       { name: startLocation || "Start", time: route[0].time },
-      { name: "Detour Stop 1", time: addMinutes(route[0].time, 20) }, // Adds 20 minutes for detour
-      { name: "Detour Stop 2", time: addMinutes(route[0].time, 40) }, // Adds more time for detour
-      { name: destination || "Destination", time: addMinutes(route[0].time, 60) }, // Final time at the destination
+      { name: "Detour Stop 1", time: addMinutes(route[0].time, 20) },
+      { name: "Detour Stop 2", time: addMinutes(route[0].time, 40) },
+      { name: destination || "Destination", time: addMinutes(route[0].time, 60) },
     ];
   
     setRoute(updatedRoute);
@@ -86,11 +96,8 @@ export default function RoutePage() {
   }
 
   const planRoute = () => {
-    // Define time estimation for stops (e.g., 15 minutes per stop as a placeholder)
-    const timeGap = 15; // 15 minutes between stops for simplicity
-  
-    // Calculate the time for each stop based on the departure time or ASAP
-    let currentTime = time === "asap" ? "10:00" : time; // Default to 10:00 for "ASAP"
+    const timeGap = 15;
+    let currentTime = time === "asap" ? "10:00" : time;
     const newRoute = [
       { name: startLocation, time: currentTime },
       { name: "Transfer Stop 1", time: addMinutes(currentTime, timeGap) },
@@ -102,7 +109,6 @@ export default function RoutePage() {
     setShowPlanModal(false);
   };
   
-  // Helper function to add minutes to a time string (HH:mm format)
   const addMinutes = (time, minutes) => {
     const [hours, mins] = time.split(":").map(Number);
     const newMinutes = mins + minutes;
@@ -113,9 +119,9 @@ export default function RoutePage() {
 
   return (
     <div className="container mx-auto p-4 max-w-md">
-      <h1 className="text-xl font-bold mb-4">Your Journey</h1>
+      <h1 className="text-2xl font-bold mb-4 text-primary">Your Journey</h1>
 
-      <Card className="mb-4">
+      <Card className="mb-4 bg-card text-card-foreground">
         <CardHeader>
           <CardTitle className="text-lg">Current Route</CardTitle>
           <CardDescription>
@@ -141,12 +147,12 @@ export default function RoutePage() {
 
       <Dialog open={showPlanModal} onOpenChange={setShowPlanModal}>
         <DialogTrigger asChild>
-          <Button className="w-full mb-2">
+          <Button className="w-full mb-2 bg-primary text-primary-foreground hover:bg-primary/90">
             <MapPinned className="mr-2 h-4 w-4" />
             Plan Your Route
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="bg-background text-foreground">
           <DialogHeader>
             <DialogTitle>Plan Your Route</DialogTitle>
             <DialogDescription>
@@ -194,7 +200,7 @@ export default function RoutePage() {
                 ASAP
               </Button>
             </div>
-            <Button onClick={planRoute} className="w-full">
+            <Button onClick={planRoute} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
               Plan Route
             </Button>
           </div>
@@ -202,17 +208,18 @@ export default function RoutePage() {
       </Dialog>
 
       <div className="space-y-2 mb-16">
-        <Button onClick={simulateRouteChange} className="w-full">
+        <Button onClick={simulateRouteChange} className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90">
           <Clock className="mr-2 h-4 w-4" />
           Simulate Route Change
         </Button>
-        <Button onClick={() => setShowAlternatives(true)} className="w-full">
+        <Button onClick={() => setShowAlternatives(true)} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+          <ArrowLeftRight className="mr-2 h-4 w-4" />
           Show Alternatives
         </Button>
       </div>
 
       <Dialog open={showRouteChange} onOpenChange={setShowRouteChange}>
-        <DialogContent>
+        <DialogContent className="bg-background text-foreground">
           <DialogHeader>
             <DialogTitle>Route Change</DialogTitle>
             <DialogDescription>
@@ -220,11 +227,11 @@ export default function RoutePage() {
               has fallen on the tracks.
             </DialogDescription>
           </DialogHeader>
-          <Alert>
+          <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Route Updated</AlertTitle>
             <AlertDescription>
-              We&aposve rerouted you to avoid delays. Your new estimated arrival
+              We've rerouted you to avoid delays. Your new estimated arrival
               time is 11:00.
             </AlertDescription>
           </Alert>
@@ -232,30 +239,58 @@ export default function RoutePage() {
       </Dialog>
 
       <Dialog open={showAlternatives} onOpenChange={setShowAlternatives}>
-        <DialogContent>
+        <DialogContent className="bg-background text-foreground">
           <DialogHeader>
             <DialogTitle>Alternative Routes</DialogTitle>
             <DialogDescription>
               Here are some alternative routes you can take:
             </DialogDescription>
           </DialogHeader>
-          <ul className="list-disc pl-5 space-y-2">
+          <ul className="space-y-2">
             {alternativeRoutes.map((route, index) => (
               <li
                 key={index}
                 onClick={() => selectAlternativeRoute(route)}
-                className="cursor-pointer hover:bg-gray-100 p-2 rounded"
+                className="cursor-pointer hover:bg-accent hover:text-accent-foreground p-2 rounded"
               >
-                <span className="font-bold">{route.mode}</span> - Arrives at{" "}
-                {route.arrivalTime}
-                <p className="text-sm text-gray-600">{route.description}</p>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold">{route.mode}</span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge variant="outline" className="ml-2">
+                          {route.icon}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{getPreferenceDescription(route.preference)}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <p>Arrives at {route.arrivalTime}</p>
+                <p className="text-sm text-muted-foreground">{route.description}</p>
               </li>
             ))}
           </ul>
         </DialogContent>
       </Dialog>
 
-      <VoiceChat />
     </div>
   )
+}
+
+function getPreferenceDescription(preference) {
+  switch (preference) {
+    case 'eco':
+      return 'Eco-friendly option'
+    case 'fast':
+      return 'Fastest route'
+    case 'walking':
+      return 'Includes more walking'
+    case 'food':
+      return 'Includes a food stop'
+    default:
+      return 'Route option'
+  }
 }
