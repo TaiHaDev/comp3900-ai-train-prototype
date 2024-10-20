@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MapPin, AlertTriangle, Clock, MapPinned, Leaf, Footprints, ArrowLeftRight, Utensils, Bus, User, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +24,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { initialRoute, alternativeRoutes } from "./routeData"; // Importing from the data file
-
+const formatDateToUTC = (date) => {
+  const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  return utcDate.toISOString().split('T')[0];
+};
 export default function RoutePage() {
   const [currentStop, setCurrentStop] = useState(0);
   const [showRouteChange, setShowRouteChange] = useState(false);
@@ -35,6 +38,53 @@ export default function RoutePage() {
   const [time, setTime] = useState("");
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [route, setRoute] = useState(initialRoute);
+
+  // State for all events and filtered events
+  const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isEventMode, setIsEventMode] = useState(true);
+
+  // Fetch events from API
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch('/api/events'); // Adjust this to your API endpoint
+        const allEvents = await response.json();
+
+        // Set the events in the state
+        setEvents(allEvents);
+        console.log(allEvents)
+
+        // Get today's date in UTC format and filter events
+        const today = formatDateToUTC(new Date());
+        const todaysEvents = allEvents.filter(event => {
+          const eventDate = formatDateToUTC(new Date(event.date)); // Ensure event.date is a valid date
+          return eventDate === today;
+        });
+        console.log(todaysEvents)
+        setFilteredEvents(todaysEvents); // Set filtered events
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  // Update the route based on selected event
+  const updateRouteFromEvent = () => {
+    if (selectedEvent) {
+      const newRoute = [
+        { name: "Start", time: "10:00" }, // Adjust based on your logic
+        { name: selectedEvent.name, time: "10:30" }, // Set the event name and time as needed
+        { name: "Destination", time: "11:00" }, // Adjust the destination
+      ];
+
+      setRoute(newRoute);
+      setShowPlanModal(false); // Close the modal after updating the route
+    }
+  };
 
   const simulateRouteChange = () => {
     const updatedRoute = [
@@ -70,6 +120,12 @@ export default function RoutePage() {
     return `${String(newHours).padStart(2, "0")}:${String(remainingMinutes).padStart(2, "0")}`;
   };
 
+  const handleEventChange = (value) => {
+    console.log(value)
+    const event = filteredEvents.find(e => e.id === value);
+    setSelectedEvent(event);
+  };
+
   return (
     <div className="container mx-auto p-4 max-w-md">
       <h1 className="text-2xl font-bold mb-4 text-primary">Your Journey</h1>
@@ -100,62 +156,97 @@ export default function RoutePage() {
       <Dialog open={showPlanModal} onOpenChange={setShowPlanModal}>
         <DialogTrigger asChild>
           <Button className="w-full mb-2 bg-primary text-primary-foreground hover:bg-primary/90">
-            <MapPinned className="mr-2 h-4 w-4" />
-            Plan Your Route
+            Open Route Options
           </Button>
         </DialogTrigger>
         <DialogContent className="bg-background text-foreground">
           <DialogHeader>
-            <DialogTitle>Plan Your Route</DialogTitle>
+            <DialogTitle>Route Options</DialogTitle>
             <DialogDescription>
-              Enter your start and destination locations, and preferred time.
+              Choose an option to proceed with your route.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              placeholder="Start Location"
-              value={startLocation}
-              onChange={(e) => setStartLocation(e.target.value)}
-              className="w-full"
-            />
-            <Input
-              placeholder="Destination"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              className="w-full"
-            />
-            <div className="flex items-center space-x-4">
-              <Select
-                value={timePreference}
-                onValueChange={(value) => setTimePreference(value)}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select time preference" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="departure">Leave At</SelectItem>
-                  <SelectItem value="arrival">Arrive By</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                type="time"
-                value={time === "asap" ? "" : time}
-                onChange={(e) => setTime(e.target.value)}
-                placeholder="As Soon As Possible"
-                className="flex-1"
-                disabled={time === "asap"}
-              />
-              <Button
-                onClick={() => time === "asap" ? setTime("") : setTime("asap")}
-                variant={time === "asap" ? "default" : "outline"}
-              >
-                ASAP
-              </Button>
-            </div>
-            <Button onClick={planRoute} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-              Plan Route
+
+          {/* Option Selector */}
+          <div className="flex justify-between mb-4">
+            <Button onClick={() => setIsEventMode(true)} className={`flex-1 ${isEventMode ? "bg-primary text-primary-foreground" : "bg-secondary text-primary-background"}`}>
+              Select Event
+            </Button>
+            <Button onClick={() => setIsEventMode(false)} className={`flex-1 ${!isEventMode ? "bg-primary text-primary-foreground" : "bg-secondary text-primary-background"}`}>
+              Plan New Route
             </Button>
           </div>
+
+          {isEventMode ? (
+            <div>
+              {/* Event Selection */}
+              <Select value={selectedEvent?.id || ""} onValueChange={handleEventChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select an event" />
+                </SelectTrigger>
+                <SelectContent>
+                  {filteredEvents.length > 0 ? (
+                    filteredEvents.map(event => (
+                      <SelectItem key={event.id} value={event.id}>
+                        {event.destination} - {new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem disabled>No events available</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <div>
+              {/* Custom Route Planning */}
+              <Input
+                placeholder="Start Location"
+                value={startLocation}
+                onChange={(e) => setStartLocation(e.target.value)}
+                className="w-full mb-2"
+              />
+              <Input
+                placeholder="Destination"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                className="w-full mb-2"
+              />
+              <div className="flex items-center space-x-4 mb-2">
+                <Select
+                  value={timePreference}
+                  onValueChange={(value) => setTimePreference(value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select time preference" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="departure">Leave At</SelectItem>
+                    <SelectItem value="arrival">Arrive By</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="time"
+                  value={time === "asap" ? "" : time}
+                  onChange={(e) => setTime(e.target.value)}
+                  placeholder="As Soon As Possible"
+                  className="flex-1"
+                  disabled={time === "asap"}
+                />
+                <Button
+                  onClick={() => time === "asap" ? setTime("") : setTime("asap")}
+                  variant={time === "asap" ? "default" : "outline"}
+                >
+                  ASAP
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* Common button to confirm selection */}
+          <Button onClick={isEventMode ? () => console.log("Event selected:", selectedEvent) : planRoute} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+            {isEventMode ? "Select Event" : "Plan Route"}
+          </Button>
         </DialogContent>
       </Dialog>
 
@@ -188,7 +279,7 @@ export default function RoutePage() {
           </Alert>
         </DialogContent>
       </Dialog>
-      
+
       <Dialog open={showAlternatives} onOpenChange={setShowAlternatives}>
         <DialogContent className="bg-background text-foreground">
           <DialogHeader>
@@ -226,6 +317,8 @@ export default function RoutePage() {
           </ul>
         </DialogContent>
       </Dialog>
+
+
 
 
       <Card className="mb-4 bg-card text-card-foreground">

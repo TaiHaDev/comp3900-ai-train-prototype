@@ -15,6 +15,11 @@ var events = [
       "time": "2:00 PM",
       "destination": "Location C"
     },
+    {
+      "date": "2024-10-20",
+      "time": "5:00 PM",
+      "destination": "Date"
+    },
   ]
   
 export async function GET() {

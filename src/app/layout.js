@@ -1,6 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
-import BottomAppBar from "@/components/BottomAppBar";
+import BottomNav from "@/components/BottomAppBar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-        {/* <BottomAppBar></BottomAppBar> */}
+        <BottomNav></BottomNav>
       </body>
     </html>
   );
