@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useState } from "react"
-import { MapPin, AlertTriangle, Clock, MapPinned, Leaf, Footprints, ArrowLeftRight, Utensils, Bus, User, Flag } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { MapPin, AlertTriangle, Clock, MapPinned, Leaf, Footprints, ArrowLeftRight, Utensils, Bus, User, Flag } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -17,66 +17,24 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { initialRoute, alternativeRoutes } from "./routeData"; // Importing from the data file
 
 export default function RoutePage() {
-  const [currentStop, setCurrentStop] = useState(0)
-  const [showRouteChange, setShowRouteChange] = useState(false)
-  const [showAlternatives, setShowAlternatives] = useState(false)
-  const [startLocation, setStartLocation] = useState("")
-  const [destination, setDestination] = useState("")
-  const [timePreference, setTimePreference] = useState("departure")
-  const [time, setTime] = useState("")
-  const [showPlanModal, setShowPlanModal] = useState(false)
-  const [route, setRoute] = useState([
-    { name: "Start", time: "10:00" },
-    { name: "Stop 1", time: "10:15" },
-    { name: "Stop 2", time: "10:30" },
-    { name: "Destination", time: "10:45" },
-  ])
-
-  const alternativeRoutes = [
-    {
-      mode: "Bus 42 to Train A",
-      arrivalTime: "11:20",
-      description: "Take Bus 42 to Central Station, then transfer to Train A. A bit longer, but avoids the current maintenance issue.",
-      preference: "eco",
-      icon: <Leaf className="h-4 w-4 text-green-500" />,
-    },
-    {
-      mode: "Bus 35 + Bus 50",
-      arrivalTime: "11:10",
-      description: "Take Bus 35 for 15 minutes, then transfer to Bus 50. Total travel time is approximately 1 hour.",
-      preference: "fast",
-      icon: <Clock className="h-4 w-4 text-blue-500" />,
-    },
-    {
-      mode: "Walk + Train B",
-      arrivalTime: "11:30",
-      description: "Walk 10 minutes to the nearest station, then take Train B directly to your destination. A healthy but slightly slower option.",
-      preference: "walking",
-      icon: <Footprints className="h-4 w-4 text-purple-500" />,
-    },
-    {
-      mode: "Bike Share + Bus 60",
-      arrivalTime: "11:25",
-      description: "Bike for 5 km to the next bus stop, then take Bus 60. Ideal for a mix of exercise and quicker transit.",
-      preference: "eco",
-      icon: <Leaf className="h-4 w-4 text-green-500" />,
-    },
-    {
-      mode: "Bus 15 + Walk + Food Stop",
-      arrivalTime: "11:05",
-      description: "Take Bus 15, then walk the remaining 1.5 km. Includes a stop at a highly-rated restaurant on the way.",
-      preference: "food",
-      icon: <Utensils className="h-4 w-4 text-orange-500" />,
-    },
-  ]
+  const [currentStop, setCurrentStop] = useState(0);
+  const [showRouteChange, setShowRouteChange] = useState(false);
+  const [showAlternatives, setShowAlternatives] = useState(false);
+  const [startLocation, setStartLocation] = useState("");
+  const [destination, setDestination] = useState("");
+  const [timePreference, setTimePreference] = useState("departure");
+  const [time, setTime] = useState("");
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [route, setRoute] = useState(initialRoute);
 
   const simulateRouteChange = () => {
     const updatedRoute = [
@@ -85,15 +43,10 @@ export default function RoutePage() {
       { name: "Detour Stop 2", time: addMinutes(route[0].time, 40) },
       { name: destination || "Destination", time: addMinutes(route[0].time, 60) },
     ];
-  
+
     setRoute(updatedRoute);
     setShowRouteChange(true);
   };
-
-  const selectAlternativeRoute = (route) => {
-    setShowAlternatives(false)
-    setShowRouteChange(false)
-  }
 
   const planRoute = () => {
     const timeGap = 15;
@@ -104,11 +57,11 @@ export default function RoutePage() {
       { name: "Transfer Stop 2", time: addMinutes(currentTime, timeGap * 2) },
       { name: destination, time: addMinutes(currentTime, timeGap * 3) },
     ];
-  
+
     setRoute(newRoute);
     setShowPlanModal(false);
   };
-  
+
   const addMinutes = (time, minutes) => {
     const [hours, mins] = time.split(":").map(Number);
     const newMinutes = mins + minutes;
@@ -132,9 +85,8 @@ export default function RoutePage() {
           {route.map((stop, index) => (
             <div
               key={index}
-              className={`flex items-center mb-2 ${
-                index === currentStop ? "text-primary font-bold" : ""
-              }`}
+              className={`flex items-center mb-2 ${index === currentStop ? "text-primary font-bold" : ""
+                }`}
             >
               <MapPin className="mr-2 h-4 w-4" />
               <span>
@@ -214,50 +166,9 @@ export default function RoutePage() {
         </Button>
         <Button onClick={() => setShowAlternatives(true)} className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
           <ArrowLeftRight className="mr-2 h-4 w-4" />
-          Show Alternatives
+          View Alternative Routes
         </Button>
       </div>
-
-      <Card className="mb-4 bg-card text-card-foreground">
-  <CardHeader>
-    <CardTitle className="text-lg">Route Map</CardTitle>
-    <CardDescription>
-      Estimated bus arrival: 5 minutes
-    </CardDescription>
-  </CardHeader>
-  <CardContent>
-    <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
-      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
-        {/* Simplified road network */}
-        <path d="M10,50 H90" stroke="#CBD5E0" strokeWidth="2" />
-        <path d="M50,10 V90" stroke="#CBD5E0" strokeWidth="2" />
-        
-        {/* Bus marker */}
-        <g transform="translate(20,50)">
-          <circle cx="0" cy="0" r="3" fill="#3182CE" />
-          <Bus size={16} className="text-blue-500" />
-          <text x="0" y="20" fontSize="4" fill="#4A5568" textAnchor="middle">Bus (5 min away)</text> {/* Centered label */}
-        </g>
-        
-        {/* User marker */}
-        <g transform="translate(50,50)">
-          <circle cx="0" cy="0" r="3" fill="#48BB78" />
-          <User size={16} className="text-green-500" />
-          <text x="0" y="20" fontSize="4" fill="#4A5568" textAnchor="middle">You are here</text> {/* Centered label */}
-        </g>
-        
-        {/* Destination marker */}
-        <g transform="translate(80,50)">
-          <circle cx="0" cy="0" r="3" fill="#ED8936" />
-          <Flag size={16} className="text-orange-500" />
-          <text x="0" y="20" fontSize="4" fill="#4A5568" textAnchor="middle">Destination</text> {/* Centered label */}
-        </g>
-      </svg>
-    </div>
-  </CardContent>
-</Card>
-
-
       <Dialog open={showRouteChange} onOpenChange={setShowRouteChange}>
         <DialogContent className="bg-background text-foreground">
           <DialogHeader>
@@ -271,13 +182,13 @@ export default function RoutePage() {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Route Updated</AlertTitle>
             <AlertDescription>
-              We've rerouted you to avoid delays. Your new estimated arrival
+              We&apos;ve rerouted you to avoid delays. Your new estimated arrival
               time is 11:00.
             </AlertDescription>
           </Alert>
         </DialogContent>
       </Dialog>
-
+      
       <Dialog open={showAlternatives} onOpenChange={setShowAlternatives}>
         <DialogContent className="bg-background text-foreground">
           <DialogHeader>
@@ -316,8 +227,48 @@ export default function RoutePage() {
         </DialogContent>
       </Dialog>
 
+
+      <Card className="mb-4 bg-card text-card-foreground">
+        <CardHeader>
+          <CardTitle className="text-lg">Route Map</CardTitle>
+          <CardDescription>
+            Estimated bus arrival: 5 minutes
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="relative w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+              {/* Simplified road network */}
+              <path d="M10,50 H90" stroke="#CBD5E0" strokeWidth="2" />
+              <path d="M50,10 V90" stroke="#CBD5E0" strokeWidth="2" />
+
+              {/* Bus marker */}
+              <g transform="translate(20,50)">
+                <circle cx="0" cy="0" r="3" fill="#3182CE" />
+                <Bus size={16} className="text-blue-500" />
+                <text x="0" y="20" fontSize="4" fill="#4A5568" textAnchor="middle">Bus (5 min away)</text> {/* Centered label */}
+              </g>
+
+              {/* User marker */}
+              <g transform="translate(50,50)">
+                <circle cx="0" cy="0" r="3" fill="#48BB78" />
+                <User size={16} className="text-green-500" />
+                <text x="0" y="20" fontSize="4" fill="#4A5568" textAnchor="middle">You are here</text> {/* Centered label */}
+              </g>
+
+              {/* Destination marker */}
+              <g transform="translate(80,50)">
+                <circle cx="0" cy="0" r="3" fill="#ED8936" />
+                <Flag size={16} className="text-orange-500" />
+                <text x="0" y="20" fontSize="4" fill="#4A5568" textAnchor="middle">Destination</text> {/* Centered label */}
+              </g>
+            </svg>
+          </div>
+        </CardContent>
+      </Card>
+
     </div>
-  )
+  );
 }
 
 function getPreferenceDescription(preference) {
